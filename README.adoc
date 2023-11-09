@@ -1,8 +1,9 @@
 = adoc2typ
 
-`adoc2typ` is a small bash/vim script for converting an AsciiDoc
-file, along with any recursively included files, to the
-corresponding Typst files.
+`adoc2typ` is a small bash/vim script for converting an
+link:https://github.com/asciidoctor/asciidoctor[AsciiDoc] file,
+along with any recursively included files, to the corresponding
+link:https://github.com/typst/typst[Typst] files.
 
 We can then generate PDF from the Typst, and that may be a better
 or at least more maintainable option than existing methods for
