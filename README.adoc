@@ -1,0 +1,34 @@
+= adoc2typ
+
+`adoc2typ` is a small bash/vim script for converting an AsciiDoc
+file, along with any recursively included files, to the
+corresponding Typst files.
+
+We can then generate PDF from the Typst, and that may be a better
+or at least more maintainable option than existing methods for
+converting AsciiDoc to PDF.
+
+`adoc2typ` is not terribly comprehensive: it's just about enough
+to cover (my) basic needs. It works ok for prose-dominant texts,
+with some images, and some very simple tables.
+
+It may be possible to increase ``adoc2typ``'s capabilities by
+rewriting it in a proper progamming language. Some day.
+
+== Usage
+
+Let's say you have a `main.adoc` file and maybe some
+`sub*.adoc` files that it (recursively) includes. Then
+
+  adoc2typ main.adoc
+
+produces `main.typ` and the various `sub*.typ` files.
+
+If you have `$TYPST_ROOT` set to some directory and there is a
+file `typstrc.typ` in it, then it is imported into `main.typ`.
+`typstrc.typ`, if present, is expected to include a Typst
+function `prose` which is used to style the document.
+
+The input AsciiDoc files are not required to have the extension
+`.adoc`, or indeed, any extension at all (although the latter is
+poor practice).

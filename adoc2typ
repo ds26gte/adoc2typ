@@ -1,0 +1,93 @@
+# last modified 2023-11-09
+# created 2023-11-05
+# Dorai Sitaram
+
+# convert argument adoc file a.adoc to typst file a.typ, recursively converting
+# all included i.adoc files to i.typ
+
+main_file=$1
+
+incl_files=()
+
+function find_includes() {
+  local this_file=$1
+  local f
+
+  # only convert included files that are local
+  if echo $this_file|grep -q '//'; then return; fi
+
+  for f in $(grep '^include::' $this_file|sed -e 's/^include::\([^\[]\+\).*/\1/'); do
+    if echo $f|grep -q '//'; then continue; fi
+    if echo ${incl_files[@]}|fgrep -qvw $f; then 
+      incl_files+=($f)
+    fi
+    find_includes $f
+  done
+}
+
+find_includes $main_file
+
+main_typ_file=${main_file%.*}.typ
+
+rm -f $main_typ_file
+
+if test -n "$TYPST_ROOT" -a -f "$TYPST_ROOT/typstrc.typ"; then
+  if grep -q '^ *#let \+prose(' "$TYPST_ROOT/typstrc.typ"; then
+    echo '#import "/typstrc.typ": *' > $main_typ_file
+    echo '#show: prose' >> $main_typ_file
+  fi
+fi
+
+cat $main_file >> $main_typ_file
+
+function convert_file() {
+  local typ_file=$1
+  vi -es $typ_file <<EOF
+
+  %s/^include::\([^\[]\{-}\)\.\([^.\/\[]\{-}\)\[.*/#include "\1.typ"/
+  %s/^include::\([^\[]\{-}\)\[.*/#include "\1.typ"/
+
+  %s/\<image::\([^\[]\+\)\[\(.\{-}\)\]/#figure(image("\1" ZZ_image_attributes(\2)))/g
+  %s/\<image:\([^\[]\{-}\)\[\(.\{-}\)\]/#image("\1" ZZ_image_attributes(\2))/g
+
+  %s/\(ZZ_image_attributes[^)]*\)width=\([0-9.%]\+\)/, width: \2\1/g
+  %s/ZZ_image_attributes(.\{-})//g
+
+  g/^|===/-1 s/^\[.*\<cols=/ZZ_table_attributes cols=/
+  %s/^ZZ_table_attributes cols="\([0-9 *]\+\)".*/ZZ_table_preamble \1/
+  g/^ZZ_table_preamble/ s/\*//g
+  %s/^ZZ_table_attributes cols= *\([0-9]\)\+.*/ZZ_table_preamble \1/
+  %s/^ZZ_table_attributes cols="\(.\{-}\)".*/ZZ_table_col_attributes\r(\1)/
+  g/^ZZ_table_col_attributes/+1 s/[a-z*]//g
+  g/^ZZ_table_col_attributes/+1 s/[<>]\+/1/g
+  g/^ZZ_table_col_attributes/+1 s/[,)]/fr\0/g
+  g/^ZZ_table_col_attributes/,+1 join
+  %s/^ZZ_table_col_attributes/ZZ_table_preamble/
+
+  g/^ZZ_table_preamble/,.+1 s/^|===.*/ZZ_table_start/
+  g/^ZZ_table_start/,.+1 s/^ *|/ZZ_table_first_row/
+  g/^ZZ_table_start/,/|===/ s/\(.\)|/\1\r|/g
+  g/^ZZ_table_start/,/|===/ s/^|/ZZ_table_mid_row/
+  %s/^ZZ_table_mid_row===/ZZ_table_end/
+  %s/^ZZ_table_preamble/#table( columns: /
+  %s/^ZZ_table_start/, /
+  %s/^ZZ_table_first_row/[ /
+  %s/^ZZ_table_mid_row/], [/
+  %s/^ZZ_table_end/] )/
+
+  g/\`\(.\{-}\)\`/ s/^/ZZ_contains_backticks/
+
+  v/^ZZ_contains_backticks/ s/\\$/\\\\$/g
+  v/^ZZ_contains_backticks/ s/\(\S\)\*\(\S\)/\1\\\\*\2/g
+  %s/^ZZ_contains_backticks//
+  w
+EOF
+}
+
+convert_file $main_typ_file
+
+for adoc_file in $(echo ${incl_files[@]}); do
+  typ_file=${adoc_file%.*}.typ
+  cp $adoc_file $typ_file
+  convert_file $adoc_file $typ_file
+done
