@@ -92,11 +92,10 @@ function convert_file() {
   g/^ZZ_verse_begin/,/^ *$/ s/^/ZZ_verse_line/
 
   g/^\s/,/^\S/ s/^\s/ZZ_implicit_code/
-  g/^ZZ_implicit_code/+1 s/^ZZ_implicit_code/\0ZZ_endline/
-  g/^ZZ_implicit_codeZZ_endline/-1 s/^ZZ_implicit_codeZZ_endline//
-  g/^ZZ_implicit_codeZZ_endline/ s/\$/\rZZ_backtickZZ_backtickZZ_backtick/
-  %s/^ZZ_implicit_codeZZ_endline//
-  %s/^ZZ_implicit_code/ZZ_backtickZZ_backtickZZ_backtick\r/
+  g/^ZZ_implicit_code/+1 s/^\(ZZ_implicit_code\)\@!/ZZ_code_fence\r/
+  g/^ZZ_implicit_code/-1 s/^\(ZZ_implicit_code\)\@!.*/\0\rZZ_code_fence/
+  %s/^ZZ_code_fence/ZZ_backtickZZ_backtickZZ_backtick/
+  %s/^ZZ_implicit_code//
 
   %s/^\(ZZ_verse_line\)\( \+\)/\1\`\2\`/
   %s/^ZZ_verse_line\(.*\)/\1\\r/
