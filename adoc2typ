@@ -1,4 +1,4 @@
-# last modified 2023-11-09
+# last modified 2023-11-10
 # created 2023-11-05
 # Dorai Sitaram
 
@@ -18,7 +18,7 @@ function find_includes() {
 
   for f in $(grep '^include::' $this_file|sed -e 's/^include::\([^\[]\+\).*/\1/'); do
     if echo $f|grep -q '//'; then continue; fi
-    if echo ${incl_files[@]}|fgrep -qvw $f; then 
+    if echo ${incl_files[@]}|fgrep -qvw $f; then
       incl_files+=($f)
     fi
     find_includes $f
@@ -43,6 +43,8 @@ cat $main_file >> $main_typ_file
 function convert_file() {
   local typ_file=$1
   vi -es $typ_file <<EOF
+
+  g/^++++ *\$/,/^++++ *\$/d
 
   %s/^include::\([^\[]\{-}\)\.\([^.\/\[]\{-}\)\[.*/#include "\1.typ"/
   %s/^include::\([^\[]\{-}\)\[.*/#include "\1.typ"/
@@ -80,6 +82,30 @@ function convert_file() {
   v/^ZZ_contains_backticks/ s/\\$/\\\\$/g
   v/^ZZ_contains_backticks/ s/\(\S\)\*\(\S\)/\1\\\\*\2/g
   %s/^ZZ_contains_backticks//
+
+  /^-- *\$/,/^-- *\$/ s/^/ZZ_block/
+
+  %s/^ZZ_block//
+
+  %s/^\[verse\]/ZZ_verse_begin/
+
+  g/^ZZ_verse_begin/,/^ *$/ s/^/ZZ_verse_line/
+
+  g/^\s/,/^\S/ s/^\s/ZZ_implicit_code/
+  g/^ZZ_implicit_code/+1 s/^ZZ_implicit_code/\0ZZ_endline/
+  g/^ZZ_implicit_codeZZ_endline/-1 s/^ZZ_implicit_codeZZ_endline//
+  g/^ZZ_implicit_codeZZ_endline/ s/\$/\rZZ_backtickZZ_backtickZZ_backtick/
+  %s/^ZZ_implicit_codeZZ_endline//
+  %s/^ZZ_implicit_code/ZZ_backtickZZ_backtickZZ_backtick\r/
+
+  %s/^\(ZZ_verse_line\)\( \+\)/\1\`\2\`/
+  %s/^ZZ_verse_line\(.*\)/\1\\r/
+
+  g/^ZZ_verse_begin/d
+  %s/^ZZ_block//
+
+  %s/ZZ_backtick/\`/g
+
   w
 EOF
 }

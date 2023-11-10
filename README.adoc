@@ -11,7 +11,7 @@ converting AsciiDoc to PDF.
 
 `adoc2typ` is not terribly comprehensive: it's just about enough
 to cover (my) basic needs. It works ok for prose-dominant texts,
-with some images, and some very simple tables.
+with code blocks, verse lines, images, and very simple tables.
 
 It may be possible to increase ``adoc2typ``'s capabilities by
 rewriting it in a proper progamming language. Some day.
@@ -25,11 +25,12 @@ Let's say you have a `main.adoc` file and maybe some
 
 produces `main.typ` and the various `sub*.typ` files.
 
-If you have `$TYPST_ROOT` set to some directory and there is a
-file `typstrc.typ` in it, then it is imported into `main.typ`.
-`typstrc.typ`, if present, is expected to include a Typst
-function `prose` which is used to style the document.
+If you have `$TYPST_ROOT` set to some directory, _and_ there is a
+file `typstrc.typ` in it, _and_ it includes a definition for a
+function `prose`, then it is imported into `main.typ`. `prose` is
+used to style your document. A sample `typstrc.typ` is included
+in this repo.
 
-The input AsciiDoc files are not required to have the extension
-`.adoc`, or indeed, any extension at all (although the latter is
-poor practice).
+The input AsciiDoc files are not required to have their extension
+be `.adoc`, or indeed, to have any extension at all (although the
+latter is poor practice).
