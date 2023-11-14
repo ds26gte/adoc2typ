@@ -1,4 +1,4 @@
-# last modified 2023-11-10
+# last modified 2023-11-14
 # created 2023-11-05
 # Dorai Sitaram
 
@@ -90,6 +90,8 @@ function convert_file() {
   %s/^\[verse\]/ZZ_verse_begin/
 
   g/^ZZ_verse_begin/,/^ *$/ s/^/ZZ_verse_line/
+
+  %s/^\.\.\.\./ZZ_backtickZZ_backtickZZ_backtick/
 
   g/^\s/,/^\S/ s/^\s/ZZ_implicit_code/
   g/^ZZ_implicit_code/+1 s/^\(ZZ_implicit_code\)\@!/ZZ_code_fence\r/
