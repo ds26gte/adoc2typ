@@ -92,6 +92,7 @@ function convert_file() {
   g/^ZZ_verse_begin/,/^ *$/ s/^/ZZ_verse_line/
 
   %s/^\.\.\.\./ZZ_backtickZZ_backtickZZ_backtick/
+  %s/^----/ZZ_backtickZZ_backtickZZ_backtick/
 
   g/^\s/,/^\S/ s/^\s/ZZ_implicit_code/
   g/^ZZ_implicit_code/+1 s/^\(ZZ_implicit_code\)\@!/ZZ_code_fence\r/
