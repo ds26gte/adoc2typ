@@ -1,4 +1,4 @@
-# last modified 2023-11-14
+# last modified 2023-11-15
 # created 2023-11-05
 # Dorai Sitaram
 
@@ -77,34 +77,41 @@ function convert_file() {
   %s/^ZZ_table_mid_row/], [/
   %s/^ZZ_table_end/] )/
 
-  g/\`\(.\{-}\)\`/ s/^/ZZ_contains_backticks/
-
-  v/^ZZ_contains_backticks/ s/\\$/\\\\$/g
-  v/^ZZ_contains_backticks/ s/\(\S\)\*\(\S\)/\1\\\\*\2/g
-  %s/^ZZ_contains_backticks//
-
   /^-- *\$/,/^-- *\$/ s/^/ZZ_block/
-
-  %s/^ZZ_block//
 
   %s/^\[verse\]/ZZ_verse_begin/
 
   g/^ZZ_verse_begin/,/^ *$/ s/^/ZZ_verse_line/
 
-  %s/^\.\.\.\./ZZ_backtickZZ_backtickZZ_backtick/
-  %s/^----/ZZ_backtickZZ_backtickZZ_backtick/
+  g/^\.\.\.\./,/^\.\.\.\./ s/^/ZZ_listing_line/
+  g/^----/,/^----/ s/^/ZZ_listing_line/
+  %s/^\(ZZ_listing_line\)\.\.\.\./\1ZZ_backtickZZ_backtickZZ_backtick/
+  %s/^\(ZZ_listing_line\)----/\1ZZ_backtickZZ_backtickZZ_backtick/
 
   g/^\s/,/^\S/ s/^\s/ZZ_implicit_code/
-  g/^ZZ_implicit_code/+1 s/^\(ZZ_implicit_code\)\@!/ZZ_code_fence\r/
+  g/^\s/,\$ s/^\s/ZZ_implicit_code/
   g/^ZZ_implicit_code/-1 s/^\(ZZ_implicit_code\)\@!.*/\0\rZZ_code_fence/
+  g/^ZZ_implicit_code/+1 s/^\(ZZ_implicit_code\)\@!/ZZ_code_fence\r/
   %s/^ZZ_code_fence/ZZ_backtickZZ_backtickZZ_backtick/
-  %s/^ZZ_implicit_code//
+
+  %s/^ZZ_listing_line//
 
   %s/^\(ZZ_verse_line\)\( \+\)/\1\`\2\`/
   %s/^ZZ_verse_line\(.*\)/\1\\r/
 
   g/^ZZ_verse_begin/d
   %s/^ZZ_block//
+
+  v/^ZZ_/ s/^.\{-}\`\(.\{-}\)\`/ZZ_contains_backticks\0/
+
+  v/^ZZ_/ s/\\$/\\\\$/g
+  v/^ZZ_/ s/\(\S\)\*\(\S\)/\1\\\\*\2/g
+
+  %s/^\* /- /
+  %s/^\(ZZ_contains_backticks\)\* /\1- /
+
+  %s/^ZZ_contains_backticks//
+  %s/^ZZ_implicit_code//
 
   %s/ZZ_backtick/\`/g
 
