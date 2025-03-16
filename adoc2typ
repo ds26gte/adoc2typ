@@ -1,4 +1,4 @@
-# last modified 2023-11-15
+# last modified 2025-03-16
 # created 2023-11-05
 # Dorai Sitaram
 
@@ -31,10 +31,10 @@ main_typ_file=${main_file%.*}.typ
 
 rm -f $main_typ_file
 
-if test -n "$TYPST_ROOT" -a -f "$TYPST_ROOT/typstrc.typ"; then
-  if grep -q '^ *#let \+prose(' "$TYPST_ROOT/typstrc.typ"; then
-    echo '#import "/typstrc.typ": *' > $main_typ_file
-    echo '#show: prose' >> $main_typ_file
+if test -n "$TYPST_ROOT" -a -f "$TYPST_ROOT/.typstrc.typ"; then
+  if grep -q '^ *#let \+config(' "$TYPST_ROOT/.typstrc.typ"; then
+    echo '#import "/.typstrc.typ": *' > $main_typ_file
+    echo '#show: config' >> $main_typ_file
   fi
 fi
 
@@ -71,9 +71,9 @@ function convert_file() {
   g/^ZZ_table_start/,/|===/ s/\(.\)|/\1\r|/g
   g/^ZZ_table_start/,/|===/ s/^|/ZZ_table_mid_row/
   %s/^ZZ_table_mid_row===/ZZ_table_end/
-  %s/^ZZ_table_preamble/#table( columns: /
+  %s/^ZZ_table_preamble/#table( columns:/
   %s/^ZZ_table_start/, /
-  %s/^ZZ_table_first_row/[ /
+  %s/^ZZ_table_first_row/[   /
   %s/^ZZ_table_mid_row/], [/
   %s/^ZZ_table_end/] )/
 
