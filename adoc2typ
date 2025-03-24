@@ -1,4 +1,4 @@
-# last modified 2025-03-16
+# last modified 2025-03-24
 # created 2023-11-05
 # Dorai Sitaram
 
@@ -51,6 +51,8 @@ function convert_file() {
 
   %s/\<image::\([^\[]\+\)\[\(.\{-}\)\]/#figure(image("\1" ZZ_image_attributes(\2)))/g
   %s/\<image:\([^\[]\{-}\)\[\(.\{-}\)\]/#image("\1" ZZ_image_attributes(\2))/g
+
+  %s/\<link:\([^\[]\{-}\)\[/#link("\1")[/g
 
   %s/\(ZZ_image_attributes[^)]*\)width=\([0-9.%]\+\)/, width: \2\1/g
   %s/ZZ_image_attributes(.\{-})//g
