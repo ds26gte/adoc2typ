@@ -1,130 +1,54 @@
-# last modified 2025-03-24
+# last modified 2025-04-11
 # created 2023-11-05
 # Dorai Sitaram
 
-# convert argument adoc file a.adoc to typst file a.typ, recursively converting
-# all included i.adoc files to i.typ
+# convert argument adoc file a.adoc to typst file a.typ
 
-main_file=$1
+f=$1
 
-incl_files=()
+g=${f%.*}
 
-function find_includes() {
-  local this_file=$1
-  local f
+# first convert $f to Docbook, $g.xml
 
-  # only convert included files that are local
-  if echo $this_file|grep -q '//'; then return; fi
+asciidoctor -b docbook $f
 
-  for f in $(grep '^include::' $this_file|sed -e 's/^include::\([^\[]\+\).*/\1/'); do
-    if echo $f|grep -q '//'; then continue; fi
-    if echo ${incl_files[@]}|fgrep -qvw $f; then
-      incl_files+=($f)
-    fi
-    find_includes $f
-  done
-}
+# rewrite admonitions, as Pandoc strips them otherwise
 
-find_includes $main_file
+vi -es $g.xml <<'EOF'
 
-main_typ_file=${main_file%.*}.typ
+g/<caution>/+1 s/<simpara>/\0<emphasis role="strong">CAUTION:<\/emphasis> /
+g/<important>/+1 s/<simpara>/\0<emphasis role="strong">IMPORTANT:<\/emphasis> /
+g/<note>/+1 s/<simpara>/\0<emphasis role="strong">NOTE:<\/emphasis> /
+g/<tip>/+1 s/<simpara>/\0<emphasis role="strong">TIP:<\/emphasis> /
+g/<warning>/+1 s/<simpara>/\0<emphasis role="strong">WARNING:<\/emphasis> /
 
-rm -f $main_typ_file
+g/^<\/\?\%(caution\|important\|note\|tip\|warning\)>$/d
 
-if test -n "$TYPST_ROOT" -a -f "$TYPST_ROOT/.typstrc.typ"; then
-  if grep -q '^ *#let \+config(' "$TYPST_ROOT/.typstrc.typ"; then
-    echo '#import "/.typstrc.typ": *' > $main_typ_file
-    echo '#show: config' >> $main_typ_file
-  fi
-fi
+w
 
-cat $main_file >> $main_typ_file
-
-function convert_file() {
-  local typ_file=$1
-  vi -es $typ_file <<EOF
-
-  g/^++++ *\$/,/^++++ *\$/d
-
-  %s/^include::\([^\[]\{-}\)\.\([^.\/\[]\{-}\)\[.*/#include "\1.typ"/
-  %s/^include::\([^\[]\{-}\)\[.*/#include "\1.typ"/
-
-  %s/\<image::\([^\[]\+\)\[\(.\{-}\)\]/#figure(image("\1" ZZ_image_attributes(\2)))/g
-  %s/\<image:\([^\[]\{-}\)\[\(.\{-}\)\]/#image("\1" ZZ_image_attributes(\2))/g
-
-  %s/\<link:\([^\[]\{-}\)\[/#link("\1")[/g
-
-  %s/\(ZZ_image_attributes[^)]*\)width=\([0-9.%]\+\)/, width: \2\1/g
-  %s/ZZ_image_attributes(.\{-})//g
-
-  g/^|===/-1 s/^\[.*\<cols=/ZZ_table_attributes cols=/
-  %s/^ZZ_table_attributes cols="\([0-9 *]\+\)".*/ZZ_table_preamble \1/
-  g/^ZZ_table_preamble/ s/\*//g
-  %s/^ZZ_table_attributes cols= *\([0-9]\)\+.*/ZZ_table_preamble \1/
-  %s/^ZZ_table_attributes cols="\(.\{-}\)".*/ZZ_table_col_attributes\r(\1)/
-  g/^ZZ_table_col_attributes/+1 s/[a-z*]//g
-  g/^ZZ_table_col_attributes/+1 s/[<>]\+/1/g
-  g/^ZZ_table_col_attributes/+1 s/[,)]/fr\0/g
-  g/^ZZ_table_col_attributes/,+1 join
-  %s/^ZZ_table_col_attributes/ZZ_table_preamble/
-
-  g/^ZZ_table_preamble/,.+1 s/^|===.*/ZZ_table_start/
-  g/^ZZ_table_start/,.+1 s/^ *|/ZZ_table_first_row/
-  g/^ZZ_table_start/,/|===/ s/\(.\)|/\1\r|/g
-  g/^ZZ_table_start/,/|===/ s/^|/ZZ_table_mid_row/
-  %s/^ZZ_table_mid_row===/ZZ_table_end/
-  %s/^ZZ_table_preamble/#table( columns:/
-  %s/^ZZ_table_start/, /
-  %s/^ZZ_table_first_row/[   /
-  %s/^ZZ_table_mid_row/], [/
-  %s/^ZZ_table_end/] )/
-
-  /^-- *\$/,/^-- *\$/ s/^/ZZ_block/
-
-  %s/^\[verse\]/ZZ_verse_begin/
-
-  g/^ZZ_verse_begin/,/^ *$/ s/^/ZZ_verse_line/
-
-  g/^\.\.\.\./,/^\.\.\.\./ s/^/ZZ_listing_line/
-  g/^----/,/^----/ s/^/ZZ_listing_line/
-  %s/^\(ZZ_listing_line\)\.\.\.\./\1ZZ_backtickZZ_backtickZZ_backtick/
-  %s/^\(ZZ_listing_line\)----/\1ZZ_backtickZZ_backtickZZ_backtick/
-
-  g/^\s/,/^\S/ s/^\s/ZZ_implicit_code/
-  g/^\s/,\$ s/^\s/ZZ_implicit_code/
-  g/^ZZ_implicit_code/-1 s/^\(ZZ_implicit_code\)\@!.*/\0\rZZ_code_fence/
-  g/^ZZ_implicit_code/+1 s/^\(ZZ_implicit_code\)\@!/ZZ_code_fence\r/
-  %s/^ZZ_code_fence/ZZ_backtickZZ_backtickZZ_backtick/
-
-  %s/^ZZ_listing_line//
-
-  %s/^\(ZZ_verse_line\)\( \+\)/\1\`\2\`/
-  %s/^ZZ_verse_line\(.*\)/\1\\r/
-
-  g/^ZZ_verse_begin/d
-  %s/^ZZ_block//
-
-  v/^ZZ_/ s/^.\{-}\`\(.\{-}\)\`/ZZ_contains_backticks\0/
-
-  v/^ZZ_/ s/\\$/\\\\$/g
-  v/^ZZ_/ s/\(\S\)\*\(\S\)/\1\\\\*\2/g
-
-  %s/^\* /- /
-  %s/^\(ZZ_contains_backticks\)\* /\1- /
-
-  %s/^ZZ_contains_backticks//
-  %s/^ZZ_implicit_code//
-
-  %s/ZZ_backtick/\`/g
-
-  w
 EOF
-}
 
-convert_file $main_typ_file
+# convert $g.xml to Typst, $g.typ
 
-for adoc_file in $(echo ${incl_files[@]}); do
-  typ_file=${adoc_file%.*}.typ
-  cp $adoc_file $typ_file
-  convert_file $adoc_file $typ_file
-done
+pandoc -f docbook -t typst $g.xml -o $g.typ
+
+# some cleanup
+
+vi -es $g.typ <<'EOF'
+
+1s/^/#import "\/.typstrc.typ": *; #show: config\r/
+
+g/^#quote(block: true)\[$/ .+1,/^\]$/-1 s/.*/%VERSE \0 \\/
+
+%s/^%VERSE ```//
+g/^%VERSE #quote(block: true)\[/d
+g/^%VERSE \]/d
+
+%s/^%VERSE //
+
+%s/^\$\s\(.\+\)\s\$$/#v(.5em)\r\0\r#v(.5em)/
+
+g/^\$\s.*\s\$$/ s/without/\\\r/g
+
+w
+EOF

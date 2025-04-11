@@ -1,25 +1,21 @@
 // created 2023-03-24
-// last modified 2025-03-16
+// last modified 2025-04-11
 
-// to use, at head of document, have
+// To use, at head of document, have
 //
 // #import "/.typstrc.typ": *
-//
 // #show: config
 //
-// (above assumes typstrc.typ is in ~, and $TYPST_ROOT is ~
-
-// this file is autoincluded when adoc2typ is used to convert an AsciiDoc adoc file to
-// its Typst equivalent
+// Above assumes .typstrc.typ is in ~, and $TYPST_ROOT is ~
 
 #let config(doc) = {
-  set par(justify: true, first-line-indent: 2em)
-  set block(spacing: 9pt)
-  // set text(font: "New Computer Modern")
-  // set text(font: "baskervald adf std")
+  set page("us-letter")
+  set page(numbering: "1")
+  set par(leading: 0.65em)
+  set par(spacing: 0.65em)
+  set par(first-line-indent: 1.5em)
+  set par(justify: true)
+  set math.mat(delim: "[")
+  set math.vec(delim: "[")
   doc
 }
-
-// #medbreak for thought break
-
-#let medbreak = v(2em, weak: true)

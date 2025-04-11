@@ -1,36 +1,32 @@
 = adoc2typ
 
-`adoc2typ` is a small bash/vim script for converting an
-link:https://github.com/asciidoctor/asciidoctor[AsciiDoc] file,
-along with any recursively included files, to the corresponding
-link:https://github.com/typst/typst[Typst] files.
+`adoc2typ` converts an
+https://github.com/asciidoctor/asciidoctor[AsciiDoc] file to
+https://github.com/typst/typst[Typst].
 
 We can then generate PDF from the Typst, and that may be a better
-or at least more maintainable option than existing methods for
-converting AsciiDoc to PDF.
+option than existing methods for converting AsciiDoc to PDF.
 
-`adoc2typ` is not terribly comprehensive: it's just about enough
-to cover (my) basic needs. It works ok for prose-dominant texts,
-with code blocks, verse lines, images, and very simple tables.
-
-It may be possible to increase ``adoc2typ``'s capabilities by
-rewriting it in a proper progamming language. Some day.
+`adoc2typ` uses Asciidoctor to convert to Docbook, and
+https://pandoc.org[Pandoc] to convert Docbook to Typst, with some
+bash and batch-vi processing in the interstices.
 
 == Usage
 
-Let's say you have a `main.adoc` file and maybe some
-`sub*.adoc` files that it (recursively) includes. Then
+  adoc2typ sample.adoc
 
-  adoc2typ main.adoc
+produces `sample.typ`.
 
-produces `main.typ` and the various `sub*.typ` files.
+A file `.typstrc.typ` from `$TYPST_ROOT` is included at the head
+of `sample.typ`. You can either have this be an empty file or put
+in it whatever Typst macros you prefer.
 
-If you have `$TYPST_ROOT` set to some directory, _and_ there is a
-file `typstrc.typ` in it, _and_ it includes a definition for a
-function `prose`, then it is imported into `main.typ`. `prose` is
-used to style your document. A sample `typstrc.typ` is included
-in this repo.
+To convert the generated `sample.typ` to PDF:
 
-The input AsciiDoc files are not required to have their extension
-be `.adoc`, or indeed, to have any extension at all (although the
-latter is poor practice).
+  typst c sample.typ
+
+You may find that you need to spot-check `sample.typ` for stray
+spacing issues.
+
+Adoc files may include other adoc subfiles, images, math. The
+extension need not be `.adoc`.

@@ -1,0 +1,58 @@
+= title
+:stem:
+
+// image:crow.png[crow,scaledwidth=20.0%]
+image::t2p.png[crow,200, align=center]
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In venenatis
+ligula libero, nec cursus odio aliquet at. Donec in lorem et quam tempor
+fringilla nec vitae massa. Curabitur a lacus cursus, facilisis magna in,
+pretium turpis. Donec eu ante quis neque faucibus pellentesque. Aenean
+viverra arcu in nunc rutrum semper. Fusce sit amet nibh congue magna
+mattis dapibus. Quisque gravida, ligula eget feugiat placerat, massa ex
+venenatis lectus, quis facilisis arcu ex a nisi. Vestibulum sit amet
+metus ut nisl aliquet imperdiet. Phasellus quis porttitor ligula.
+
+stem:[a^{2}]
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
+pellentesque dignissim lacus, vitae ultrices tellus gravida
+nec. Suspendisse et massa risus. Lorem ipsum dolor sit amet,
+
+[.center]
+--
+[stem]
+++++
+(a + b)^{33} \
+(a + b)^{33} \
+(a + b)^{33} \
+(a + b)^{33} \
+(a + b)^{33} \
+(a + b)^{33} \
+(a + b)^{33} \
+(a + b)^{33}
+++++
+--
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. In finibus
+justo ac eros semper, ac varius augue pulvinar. Quisque sit amet tortor
+hendrerit, tempor neque sit amet, maximus mauris. Nunc non risus
+egestas, bibendum velit non, porttitor felis. Vestibulum feugiat orci
+sed nulla pulvinar tincidunt. Donec mattis scelerisque ipsum. Interdum
+et malesuada fames ac ante ipsum primis in faucibus. Donec gravida est
+pulvinar ante mattis, id porta magna ultrices. Etiam sit amet rutrum
+arcu, quis tempor turpis. Suspendisse potenti. Sed vel eleifend turpis,
+quis imperdiet urna. Aliquam dictum ultricies sem ut rutrum. Integer in
+mauris quam.
+
+[%autowidth,cols="<,>,>,>"]
+|===
+| type        | original | remaining | % gone
+
+| humpbacks   | 100,000  | 3,000     | 97.0
+| fin whales  | 400,000  | 2,000     | 99.5
+| seis        | 150,000  | 1,500     | 99.0
+| blue whales | 180,000  | 660       | 99.6
+|===
+
+😀
