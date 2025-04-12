@@ -1,10 +1,18 @@
-# last modified 2025-04-11
+# last modified 2025-04-12
 # created 2025-03-31
 # Dorai Sitaram
 
 # convert adoc to docbook
 
+test $# -ne 1 &&
+  echo $0 requires precisely one argument &&
+  exit 1
+
 f=$1
+
+test ! -f $f &&
+  echo File $f not found &&
+  exit 1
 
 g=${f%.*}
 

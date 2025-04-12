@@ -1,17 +1,23 @@
-# last modified 2025-04-11
+# last modified 2025-04-12
 # created 2023-11-05
 # Dorai Sitaram
 
 # convert argument adoc file a.adoc to typst file a.typ
 
+test $# -ne 1 &&
+  echo $0 requires precisely one argument &&
+  exit 1
+
 f=$1
+
+test ! -f $f &&
+  echo File $f not found &&
+  exit 1
 
 g=${f%.*}
 
-# first convert $f to $g.xml (Docbook)
-
-adoc2docbook $f
-
+# first convert $f to $g.xml (Docbook), then
 # convert $g.xml to $g.typ (Typst)
 
-docbook2typ $g.xml
+adoc2docbook $f &&
+  docbook2typ $g.xml
