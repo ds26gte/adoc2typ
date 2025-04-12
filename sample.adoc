@@ -1,8 +1,5 @@
-= title
+== A Sample Document
 :stem:
-
-// image:crow.png[crow,scaledwidth=20.0%]
-image::t2p.png[crow,200, align=center]
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. In venenatis
 ligula libero, nec cursus odio aliquet at. Donec in lorem et quam tempor
@@ -10,44 +7,48 @@ fringilla nec vitae massa. Curabitur a lacus cursus, facilisis magna in,
 pretium turpis. Donec eu ante quis neque faucibus pellentesque. Aenean
 viverra arcu in nunc rutrum semper.
 
-stem:[a^{2}]
+== Image
+
+// image:crow.png[crow,scaledwidth=20.0%]
+image::t2p.png[crow,200, align=center]
+
+== Math
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
 pellentesque dignissim lacus, vitae ultrices tellus gravida
-nec. Suspendisse et massa risus. Lorem ipsum dolor sit amet,
+nec.
+
+stem:[(a + b)^2 = a^2 + 2ab + b^2 ]
+
+Donec felis lectus, iaculis nec sollicitudin in,
+iaculis ac eros.
 
 [.center]
 --
 [stem]
 ++++
-(a + b)^{33} \
-(a + b)^{33} \
-(a + b)^{33} \
-(a + b)^{33} \
+
 sum_(i=1)^n i^3=((n(n+1))/2)^2 \
-(a + b)^{33} \
-(a + b)^{33} \
-(a + b)^{33} \
-(a + b)^{33}
+
+1 / sqrt(2 pi) int_(- infty)^infty e^(-x^2 // 2) dx = 1 \
+
+E =  m c^2
+
 ++++
 --
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. In
 lorem ante, venenatis vitae tincidunt non, tempus non
-sapien. Donec felis lectus, iaculis nec sollicitudin in,
-iaculis ac eros. Fusce et efficitur orci, vitae gravida
+sapien. Fusce et efficitur orci, vitae gravida
 turpis. Morbi ornare, felis maximus pellentesque varius, magna
 est accumsan nisi, et tempor turpis libero ut neque. Nam non
 risus vel nisl tincidunt pretium. Aenean tempus nulla mi, at
 sollicitudin ex vestibulum vestibulum.
 
-Vestibulum luctus vulputate lectus ut consectetur. Duis in
-ligula eget orci vulputate laoreet eu eget augue. Morbi
-non vestibulum mauris. Morbi porta eros id sem pretium
-venenatis. Sed volutpat, leo vitae rhoncus faucibus, dui
-odio venenatis orci, convallis scelerisque elit metus nec
-lacus. Proin et odio elementum, ullamcorper augue non, fermentum
-ante. Morbi a lobortis odio.
+== Code
+
+Vestibulum luctus vulputate lectus ut consectetur. A definition
+of `fact` using `define` and `if`:
 
   (define (fact n)
     (if (= n 0) 1
@@ -60,6 +61,8 @@ arcu, quis tempor turpis. Suspendisse potenti. Sed vel eleifend turpis,
 quis imperdiet urna. Aliquam dictum ultricies sem ut rutrum. Integer in
 mauris quam.
 
+== Table
+
 [%autowidth,cols="<,>,>,>"]
 |===
 | type        | original | remaining | % gone
@@ -70,4 +73,4 @@ mauris quam.
 | blue whales | 180,000  | 660       | 99.6
 |===
 
-😀
+⏹

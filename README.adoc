@@ -11,6 +11,11 @@ option than existing methods for converting AsciiDoc to PDF.
 https://pandoc.org[Pandoc] to convert Docbook to Typst, with some
 bash and batch-vi processing in the interstices.
 
+== Install
+
+Put the scripts `adoc2typ`, `adoc2docbook`, `docbook2typ` in your
+`PATH`.
+
 == Usage
 
   adoc2typ sample.adoc
