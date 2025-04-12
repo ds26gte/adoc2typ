@@ -46,9 +46,21 @@ g/^%VERSE \]/d
 
 %s/^%VERSE //
 
-%s/^\$\s\(.\+\)\s\$$/#v(.5em)\r\0\r#v(.5em)/
+%s/^\$\s\(.\+\)\s\$$/#v(0.5em)\r\0\r#v(0.5em)/
 
 g/^\$\s.*\s\$$/ s/without/\\\r/g
+
+g/^```/ .-1s/^$/\r#v(0.5em)/
+g/^```/ .+1s/^$/#v(0.5em)\r/
+
+g/^#figure(/ .s/^/#v(0.5em)\r\0/
+
+func! Close_figure()
+  norm %
+  s/$/\r#v(0.5em)/
+endfunc
+
+g/^#figure(/ call Close_figure()
 
 w
 EOF
