@@ -24,6 +24,7 @@ nec. Suspendisse et massa risus. Lorem ipsum dolor sit amet,
 (a + b)^{33} \
 (a + b)^{33} \
 (a + b)^{33} \
+sum_(i=1)^n i^3=((n(n+1))/2)^2 \
 (a + b)^{33} \
 (a + b)^{33} \
 (a + b)^{33} \
