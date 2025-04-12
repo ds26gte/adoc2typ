@@ -1,0 +1,42 @@
+#! /bin/bash
+# last modified 2025-04-11
+# created 2025-04-02
+
+f=$1
+
+g=${f%.*}
+
+pandoc -f docbook -t typst $f -o $g.typ
+
+# some cleanup
+
+vi -es $g.typ <<'EOF'
+
+1s/^/#import "\/.typstrc.typ": *; #show: config\r/
+
+g/^#quote(block: true)\[$/ .+1,/^\]$/-1 s/.*/%VERSE \0 \\/
+
+%s/^%VERSE ```//
+g/^%VERSE #quote(block: true)\[/d
+g/^%VERSE \]/d
+
+%s/^%VERSE //
+
+%s/^\$\s\(.\+\)\s\$$/#v(0.5em)\r\0\r#v(0.5em)/
+
+g/^\$\s.*\s\$$/ s/without/\\\r/g
+
+g/^```/ .-1s/^$/\r#v(0.5em)/
+g/^```/ .+1s/^$/#v(0.5em)\r/
+
+g/^#figure(/ .s/^/#v(0.5em)\r\0/
+
+func! Close_figure()
+  norm %
+  s/$/\r#v(0.5em)/
+endfunc
+
+g/^#figure(/ call Close_figure()
+
+w
+EOF

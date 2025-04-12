@@ -8,59 +8,10 @@ f=$1
 
 g=${f%.*}
 
-# first convert $f to Docbook, $g.xml
+# first convert $f to $g.xml (Docbook)
 
-asciidoctor -b docbook $f
+adoc2docbook $f
 
-# rewrite admonitions, as Pandoc strips them otherwise
+# convert $g.xml to $g.typ (Typst)
 
-vi -es $g.xml <<'EOF'
-
-g/<caution>/+1 s/<simpara>/\0<emphasis role="strong">CAUTION:<\/emphasis> /
-g/<important>/+1 s/<simpara>/\0<emphasis role="strong">IMPORTANT:<\/emphasis> /
-g/<note>/+1 s/<simpara>/\0<emphasis role="strong">NOTE:<\/emphasis> /
-g/<tip>/+1 s/<simpara>/\0<emphasis role="strong">TIP:<\/emphasis> /
-g/<warning>/+1 s/<simpara>/\0<emphasis role="strong">WARNING:<\/emphasis> /
-
-g/^<\/\?\%(caution\|important\|note\|tip\|warning\)>$/d
-
-w
-
-EOF
-
-# convert $g.xml to Typst, $g.typ
-
-pandoc -f docbook -t typst $g.xml -o $g.typ
-
-# some cleanup
-
-vi -es $g.typ <<'EOF'
-
-1s/^/#import "\/.typstrc.typ": *; #show: config\r/
-
-g/^#quote(block: true)\[$/ .+1,/^\]$/-1 s/.*/%VERSE \0 \\/
-
-%s/^%VERSE ```//
-g/^%VERSE #quote(block: true)\[/d
-g/^%VERSE \]/d
-
-%s/^%VERSE //
-
-%s/^\$\s\(.\+\)\s\$$/#v(0.5em)\r\0\r#v(0.5em)/
-
-g/^\$\s.*\s\$$/ s/without/\\\r/g
-
-g/^```/ .-1s/^$/\r#v(0.5em)/
-g/^```/ .+1s/^$/#v(0.5em)\r/
-
-g/^#figure(/ .s/^/#v(0.5em)\r\0/
-
-func! Close_figure()
-  norm %
-  s/$/\r#v(0.5em)/
-endfunc
-
-g/^#figure(/ call Close_figure()
-
-w
-EOF
+docbook2typ $g.xml

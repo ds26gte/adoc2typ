@@ -1,0 +1,27 @@
+# last modified 2025-04-11
+# created 2025-03-31
+# Dorai Sitaram
+
+# convert adoc to docbook
+
+f=$1
+
+g=${f%.*}
+
+asciidoctor -b docbook $f
+
+# rewrite admonitions, as Pandoc strips them otherwise
+
+vi -es $g.xml <<'EOF'
+
+g/<caution>/+1 s/<simpara>/\0<emphasis role="strong">CAUTION:<\/emphasis> /
+g/<important>/+1 s/<simpara>/\0<emphasis role="strong">IMPORTANT:<\/emphasis> /
+g/<note>/+1 s/<simpara>/\0<emphasis role="strong">NOTE:<\/emphasis> /
+g/<tip>/+1 s/<simpara>/\0<emphasis role="strong">TIP:<\/emphasis> /
+g/<warning>/+1 s/<simpara>/\0<emphasis role="strong">WARNING:<\/emphasis> /
+
+g/^<\/\?\%(caution\|important\|note\|tip\|warning\)>$/d
+
+w
+
+EOF
